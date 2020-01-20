@@ -1,0 +1,13 @@
+PROGRAM
+  A: INTEGER;
+BEGIN
+  IF A<50 THEN
+    A := 99;
+  END IF;
+END PROGRAM; *
+END0_
+15.151
+15.151.
+15.151IF
+IF&^OPED
+& && ! != : :=
