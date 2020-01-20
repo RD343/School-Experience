@@ -1,0 +1,269 @@
+// LinkedList.h
+
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
+#include <cstdlib>
+#include <iostream>
+
+#include "Node.h"
+
+using namespace std;
+
+/******************************************************************
+ Class LinkedList
+ This class defines a data structure for a linked list of integers
+*******************************************************************/   
+class LinkedList 
+{
+  private:
+   Node<int>* headNodePtr;
+
+  public:
+   LinkedList ();
+   bool isEmpty();
+   void insert  (int);
+   void append  (int);
+   int count();
+   void printList();
+   int retrieve  (int);
+   int retrieveAtPos (int);
+   int readAtPos(int);
+   void clear();
+   
+   // EXCEPTIONS THROWN
+	static const int ItemNotFound = 8001;
+	static const int NodeAtPositionNotFound = 8002;
+};
+
+
+
+
+/*=====================================================================
+/*     IMPLEMENTATION OF METHOD/FUNCTIONS
+/*=====================================================================
+
+/******************************************************************
+ Class LinkedList
+ Function:  Constructor
+     Create am empty linked list
+	 This is indicated by a null pointer in the start of list (headNodePtr)
+ Return: a pointer to the constructed LinkedList object.
+*******************************************************************/   
+LinkedList::LinkedList() 
+{
+	headNodePtr = NULL;
+}
+
+ /******************************************************************
+ Class LinkedList
+ Function:  isEmpty
+ Parameters: None
+  Returns a bool that indicates if the linked list is or is not empty
+*******************************************************************/   
+bool LinkedList::isEmpty() 
+{
+   if (headNodePtr == NULL)
+      return true;
+   else
+      return false;
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  insertFront
+     Inserts a new item at the front of the list
+	 This routing will create a Node object to contain the item to add
+ Parameters: item to add to the list
+ Return: void
+*******************************************************************/   
+void LinkedList::insert(int item)
+{
+	// The headNodePtr currently points to the first node in the list or NULL
+	// Create the new node with the item given and point it to the same node (or NULL) as the head
+ 	Node<int> *newNodePtr = new Node<int>(item, headNodePtr);  
+	
+	// Set the head node pointer equal to the new node, now the first one in the list
+     headNodePtr = newNodePtr;
+	
+   // Now the head node points to the new node and the new node points to the rest of the list. 
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  insertRear
+     Inserts a new item at the end of the list
+	 This routing will create a Node object to contain the item to add
+ Parameters: item to add to the list
+ Return: void
+*******************************************************************/   
+void LinkedList::append (int item)
+{   
+   Node<int>* tempPtr = headNodePtr;
+   Node<int>* tempApp = new Node<int>(item);
+
+   if ( headNodePtr == NULL )
+      headNodePtr = tempApp;
+   else
+   {
+      while ( (tempPtr -> getNext()) != NULL )
+      {
+	 tempPtr = (tempPtr -> getNext());
+      }
+      tempPtr -> setNext(tempApp);
+   }
+}
+
+ /******************************************************************
+ Class LinkedList
+ Function:  count
+ Parameters: None
+  Returns an integer count of the number of items in the list
+*******************************************************************/   
+int LinkedList::count() 
+{
+   int length;
+   Node<int>* tempPtr = headNodePtr;
+   if ( headNodePtr == NULL )
+      length = 0;
+   else
+   {
+      length = 1;
+      while ( (tempPtr -> getNext()) != NULL )
+      {
+	 length++;
+	 tempPtr = (tempPtr -> getNext());
+      }
+   }
+   return length;
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  printList
+    Walks through the list looking for a node at the position passed.
+	The position starts counting at 1. That is the first node in the list
+	is at position 1.
+	If that node is found, it removes the node from the list 
+	 and returns the value.
+	 
+	 If the node is not found, signal an  exception: NodeAtPositionNotFound
+	 
+ Parameters: item to find.
+ Result:  Node with item is removed from the list.
+ Return: item
+*******************************************************************/ 
+void LinkedList::printList () 
+{
+   Node<int>* tempPtr = headNodePtr;
+   if ( headNodePtr == NULL )
+      cout << "There is nothing to print" << endl;
+   else
+   {
+      cout << "\n" << headNodePtr -> getItem() << endl;
+      while ( (tempPtr -> getNext()) != NULL )
+      {
+	 tempPtr = (tempPtr -> getNext());
+	 cout << "\n" << tempPtr -> getItem() << endl;
+      }
+   }
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  readAtPos
+    Walks through the list looking for a node at the position passed.
+	The position starts counting at 1. That is the first node in the list
+	is at position 1.
+	If that node is found, it returns the value of the item at that node. 
+	 
+	 If the node is not found, signal an  exception: NodeAtPositionNotFound
+	 
+ Parameters: Position in list.
+
+ Return: item at that position
+*******************************************************************/ 
+int  LinkedList::readAtPos(int pos)
+   {
+   //REPLACE THE LINE BELOW WITH YOUR OWN CODE
+
+   cout << "You must implement this function" <<endl;
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  retrieveAtPos
+    Walks through the list looking for a node at the position passed.
+	The position starts counting at 1. That is the first node in the list
+	is at position 1.
+	If that node is found, it removes the node from the list 
+	 and returns the value.
+	 
+	 If the node is not found, signal an  exception: NodeAtPositionNotFound
+	 
+ Parameters: Position in list.
+
+ Result:  Node with item is removed from the list.
+ Return: item at that position
+*******************************************************************/ 
+int LinkedList::retrieveAtPos (int pos)
+{
+   //REPLACE THE LINE BELOW WITH YOUR OWN CODE
+   cout << "You must implement this function" <<endl;
+}
+
+/******************************************************************
+ Class LinkedList
+ Function:  retrieve
+    Walks through the list looking for a node that matches the item
+	 passed. If that node is found, it removes the node from the list 
+	 and returns the value.
+	 
+	 If the node is not found, signal an  exception: ItemNotFound
+	 
+ Parameters: item to find.
+ Result:  Node with item is removed from the list.
+ Return: item
+*******************************************************************/ 
+int LinkedList::retrieve (int item)
+{
+   if ( headNodePtr == NULL )
+      throw (ItemNotFound);
+   else if ( (headNodePtr -> getNext()) != NULL )
+   {
+      if ( (headNodePtr -> getItem()) == item )
+      {
+	 delete headNodePtr;
+	 headNodePtr = NULL;
+	 return item;
+      }
+      else
+	 throw (ItemNotFound);
+   }
+   Node<int> *tempPtr = headNodePtr -> getNext();
+   Node<int> *prevPtr = headNodePtr;
+   while ( (tempPtr -> getItem()) != item)
+   {
+      tempPtr = tempPtr -> getNext();
+      prevPtr = prevPtr -> getNext();
+   }
+   prevPtr -> setNext( tempPtr -> getNext() );
+   delete tempPtr;
+   return item;
+}
+
+ /******************************************************************
+ Class LinkedList
+ Function:  clear
+ Parameters: None
+  Removes and deletes all the entries of the list
+   Function:  isEmpty
+  Returns void
+*******************************************************************/   
+   void LinkedList::clear() {
+   //REPLACE THE LINE BELOW WITH YOUR OWN CODE
+   // Print each item on a new line
+   cout << "You must implement this function" <<endl;
+}
+
+#endif
