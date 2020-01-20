@@ -1,0 +1,195 @@
+#include "Date.h"
+
+using namespace std;
+
+/*******************
+//Default Constructor
+********************/
+Date::Date()
+{
+	month = 0;
+	day = 0;
+	year = 0;
+}
+
+/******************************************************
+//Constructor 2
+//Input variables can go straight into this constructor
+*******************************************************/
+Date::Date(int aMonth, int aDay, int aYear)
+{
+	month = aMonth;
+	day = aDay;
+	year = aYear;
+}
+
+/*********************************************
+//Set functions
+//sets the existing variable to an input value
+**********************************************/
+void Date::setMonth(int aMonth)
+{
+	month = aMonth;
+}
+
+void Date::setDay(int aDay)
+{
+	day = aDay;
+}
+
+void Date::setYear(int aYear)
+{
+	year = aYear;
+}
+
+/********************************************************
+//Get Functions
+//returns the variable value within the Date class object
+*********************************************************/
+int Date::getMonth() const
+{
+	return month;
+}
+
+int Date::getDay() const
+{
+	return day;
+}
+
+int Date::getYear() const
+{
+	return year;
+}
+
+/*******************************
+//Output Function
+//Displays the given Date object
+********************************/
+/*void Date::printDate() const
+{
+	cout << "The date is (M-D-Y): " << month << "-" << day << "-" << year << endl;
+}*/
+
+ostream& operator << (ostream& os, const Date& argDate)
+{
+	os << "The date is (M-D-Y): " << argDate.getMonth() << "-" << argDate.getDay() << "-" << argDate.getYear() << endl;
+	return os;
+}
+
+/**********************************************************************************************
+//Comparing Months Function
+//One Date object calls the function, and the second date object is the argument in parentheses
+//Returns boolean value
+***********************************************************************************************/
+/*bool Date::sameMonth(Date date2) const
+{
+	if(month == date2.getMonth())
+		return true;
+	else return false;
+}*/
+
+bool Date::operator == (const Date& arg_Date) const
+{
+    if (month == arg_Date.month /*&& day == arg_Date.day && year == arg_Date.year*/)
+        return true;
+    else
+        return false;
+}
+
+/********************************************************************
+//Leap Year Check
+//Uses modular division to determine if the given year is a leap year
+//Returns boolean value
+*********************************************************************/
+bool Date::leap_year()
+{
+	if (year % 400 == 0)
+		return true;
+	else if (year % 100 == 0)
+		return false;
+		else if (year % 4 == 0)
+			return true;
+			else
+				return false;
+}
+
+/*************************************************************************
+//Validates user input
+//If user inputs a wrong day or month number, this function returns false
+**************************************************************************/
+bool Date::validation()
+{
+	if(leap_year() == true && month == 2 && (day <= 29 && day > 0))
+		return true;
+	else if(month == 2 && (day <= 28 && day > 0))
+		return true;
+	else if((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && (day <= 31 && day > 0))
+		return true;
+	else if((month == 4 || month == 6 || month == 9 || month == 11) && (day <= 30 && day > 0))
+		return true;
+	else
+		return false;
+}
+
+Date operator+ (Date argDate, int numberofdays)	//date + #
+{
+	int i = 0;
+	while(i != numberofdays)
+	{
+		argDate.nextDay();
+		i++;
+	}
+	return argDate;
+}
+
+Date operator+ (int numberofdays, Date argDate)
+{
+	int i = 0;
+	while(i != numberofdays)
+	{
+		argDate.nextDay();
+		i++;
+	}
+	return argDate;
+}
+
+Date& Date::operator++ ()
+{
+	nextDay();
+}
+
+Date& Date::operator++ (int)
+{
+	nextDay();
+}
+/*************************************************************************************
+//Change Day Function
+//Moves the date forward by one day
+//Uses if/else statements to change months and years if necessary when the day changes
+***************************************************************************************/
+void Date::nextDay()
+{
+	if(leap_year() == true && month == 2)	//Contingency for leap year and month of February
+	{
+		if(day <= 28)
+			day = day++;
+		else if(day == 29)
+		{
+			month = month++;
+			day = 1;
+		}
+	}
+	else if(month == 12 && day == 31)	//Contingency for final day of the year
+	{
+		month = 1;
+		day = 1;
+		year = year++;
+	}
+	else if(((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10) && day == 31) || ((month == 4 || month == 6 || month == 9 || month == 11) && day == 30) || (month == 2 && day == 28))			//Contingency for final day of each month
+	{					//Excludes leap year condition
+		month = month++;
+		day = 1;
+	}
+	else
+		day = day++;			//Normal day transition
+}

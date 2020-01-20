@@ -1,0 +1,49 @@
+#include <iostream>
+#include <iomanip>
+#include "Date.h"
+#include "Date.cpp"
+
+using namespace std;
+
+int main()
+{
+	Date date1; //Calls default constructor
+	int inMonth;
+	int inDay;
+	int inYear;
+	int numberofdays;
+
+	cout << "Enter the date numerically (Month Day Year): ";
+	cin >> inMonth >> inDay >> inYear;
+	date1.setMonth(inMonth);
+	date1.setDay(inDay);
+	date1.setYear(inYear);
+
+	while(date1.validation() == false) //Calls validation function
+	{
+		cout << "\nThe month or day is incorrect. Please re-enter the date (M D Y): ";
+		cin >> inMonth >> inDay >> inYear;
+		date1.setMonth(inMonth);
+		date1.setDay(inDay);
+		date1.setYear(inYear);
+	}
+
+	cout << "\nThe date will be moved forward by a certain number of days. (date + number)" << endl;
+	cout << "Enter the number of days to add: ";
+	cin >> numberofdays;
+	date1 = date1 + numberofdays;
+	cout << "\nNew date: " << date1 << endl;
+
+	cout << "Enter another number to test the opposite addition order. (number + date)" << endl;
+	cout << "Enter the number of days to add: ";
+	cin >> numberofdays;
+	cout << "\nOriginal date: " << date1 << endl; 
+	date1 = numberofdays + date1;
+	cout << "New date: " << date1 << endl;
+
+	cout << "This tests the date++ overload.";
+	cout << "\nOriginal date: " << date1 << endl; 
+	date1++;
+	cout << "New date: " << date1 << endl;
+	return 0;
+}
