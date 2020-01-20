@@ -1,0 +1,335 @@
+#include <iostream>
+#include <cstdlib>
+#include <string>
+
+#include "Hand.h"
+
+using namespace std;
+
+/*********************************************
+//Constructor
+//sets universal Hand variables to 0 or NULL
+**********************************************/
+Hand::Hand()
+{
+	clubsCount = 0;
+	diamondsCount = 0;
+	heartsCount = 0;
+	spadesCount = 0;
+	rankSum = 0;
+	headNodePtr = NULL;
+}
+
+/*********************************************************************
+//addCard
+//This function adds a card to the Hand object
+//This function also keeps a tally of the rankSum in the hand object
+//Also tallies up each suit in the hand as they are added
+	//Does not tally suits of cards with rank of 8
+*********************************************************************/
+void Hand::addCard(Card draw)
+{
+	append(draw);
+	rankSum = rankSum + draw;
+
+	if(draw.getRank() != 8)
+	{
+		switch(draw.getSuit())
+		{
+		case Clubs:
+			clubsCount++;
+			break;
+		case Diamonds:
+			diamondsCount++;
+			break;
+		case Hearts:
+			heartsCount++;
+			break;
+		case Spades:
+			spadesCount++;
+			break;
+		default:
+			cout << "\nProblem with addCard" << endl;
+		}
+	}
+}
+
+/*******************************************************************************************
+//removeCardSuit
+//Acts as a reverse counterpart to the Hand's addCard function
+	//when argument card is removed, it is removed from the Hand's associated suit count
+	//Does not actually remove card from hand
+		//Argument card is removed outside, and then this function alters the counts
+//For use by the computer player in crazy eights
+********************************************************************************************/
+void Hand::removeCardSuit(Card play)
+{
+	if(play.getRank() != 8)
+	{
+		switch(play.getSuit())
+		{
+		case Clubs:
+			clubsCount--;
+			break;
+		case Diamonds:
+			diamondsCount--;
+			break;
+		case Hearts:
+			heartsCount--;
+			break;
+		case Spades:
+			spadesCount--;
+			break;
+		default:
+			cout << "\nProblem with addCard" << endl;
+		}
+	}
+}
+
+/************************************************************
+//getRankSum
+//Returns a deck's ranksum
+//Unless otherwise changed, rankSum should be zero
+//BlackJack function will change the rankSum of player decks
+************************************************************/
+int Hand::getRankSum()
+{
+	return rankSum;
+}
+
+/***************************************
+//getSuitCount
+//Returns the hand's count of each suit
+	//excludes eights
+//For testing purposes only
+****************************************/
+void Hand::getSuitCounts()
+{
+	cout << "\nThe number of Clubs in the player hand is: " << clubsCount << endl;
+	cout << "\nThe number of Diamonds in the player hand is: " << diamondsCount << endl;
+	cout << "\nThe number of Hearts in the player hand is: " << heartsCount << endl;
+	cout << "\nThe number of Spades in the player hand is: " << spadesCount << endl;
+}
+
+/*****************************************************************************
+//suitsMatch
+//Checks to see if the hand has cards with suits that match the toMatch card's
+******************************************************************************/
+bool Hand::suitsMatch(Card toMatch)
+{
+	switch(toMatch.getSuit())
+	{
+	case Clubs:
+		if(clubsCount > 0)
+			return true;
+		else
+			return false;
+		break;
+	case Diamonds:
+		if(diamondsCount > 0)
+			return true;
+		else
+			return false;
+		break;
+	case Hearts:
+		if(heartsCount > 0)
+			return true;
+		else
+			return false;
+		break;
+	case Spades:
+		if(spadesCount > 0)
+			return true;
+		else
+			return false;
+		break;
+	default:
+		cout << "\nSomething wrong with bool matchingSuits" << endl;
+	}
+}
+
+/***********************************************************************
+//ranksMatch
+//Checks Hand for a card with rank that matches that of the toMatch card
+************************************************************************/
+bool Hand::ranksMatch(Card toMatch)
+{
+	Node<Card>* matchPtr = headNodePtr;
+	temp = matchPtr -> getItem();
+	if(temp.getRank() == toMatch.getRank() && temp.getRank() != Eight)
+	{
+		return true;
+	}
+	else
+	{
+		while (matchPtr -> getNext() != NULL)
+		{
+			matchPtr = matchPtr -> getNext();
+			temp = matchPtr -> getItem();
+			if(temp.getRank() == toMatch.getRank() && temp.getRank() != Eight)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+}
+/**************************************
+//hasEights
+//Checks the hand for cards with rank 8
+***************************************/
+bool Hand::hasEights()
+{
+	Node<Card>* searchPtr = headNodePtr;
+	temp = searchPtr -> getItem();
+	if(temp.getRank() == 8)
+	{
+		return true;
+	}
+	else
+	{
+		while (searchPtr -> getNext() != NULL)
+		{
+			searchPtr = searchPtr -> getNext();
+			temp = searchPtr -> getItem();
+			if(temp.getRank() == 8)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+}
+/***************************************************************************************
+//searchSuits
+//For use by the computer player in crazy eights
+//Returns the position (int) of the card that the computer will play
+	//Only called if the computer has confirmed there are matching suits in its hand
+****************************************************************************************/
+int Hand::searchSuits(Card toMatch)
+{
+	int position = 0;
+	Node<Card>* searchPtr = headNodePtr;
+	if(headNodePtr == NULL)
+	{
+		cout << "The list is empty! This is the problem" << endl;
+		return position;
+	}
+	else
+	{	
+		position = 1;
+		temp = searchPtr -> getItem();
+		if(temp.getSuit() == toMatch.getSuit() && temp.getRank() != Eight)
+		{
+			return position;
+		}
+		else
+		{
+			while (searchPtr -> getNext() != NULL)
+			{
+				position++;
+				searchPtr = searchPtr -> getNext();
+				temp = searchPtr -> getItem();
+				if(temp.getSuit() == toMatch.getSuit() && temp.getRank() != Eight)
+				{
+					return position;
+				}
+			}
+		}
+	}
+}
+
+/*************************************************************
+//searchRanks
+//For use by the computer player in crazy eights
+//Returns the position (int) of the card that the computer will play
+	//Based on card rank
+	//Only called if hand has no matching suits
+***************************************************************/
+int Hand::searchRanks(Card toMatch)
+{
+	int position = 0;
+	Node<Card>* searchPtr = headNodePtr;
+	if (headNodePtr == NULL)
+	{
+		cout << "The list is empty!" << endl;
+	}
+	else
+	{
+		position = 1;
+		temp = searchPtr -> getItem();
+		if(temp.getRank() == toMatch.getRank() && temp.getRank() != Eight)
+		{
+			return position;
+		}
+		else
+		{
+			while (searchPtr -> getNext() != NULL)
+			{
+				position++;
+				searchPtr = searchPtr -> getNext();
+				temp = searchPtr -> getItem();
+				if(temp.getRank() == toMatch.getRank() && temp.getRank() != Eight)
+				{
+					return position;
+				}
+			}
+		}
+	}
+}
+
+/*********************************************************************
+//findEight
+//Meant for use by computer player in Crazy Eights game
+//Only implements if there are no other cards of matching rank or suit
+//Only implement if there are eights in the specified hand
+**********************************************************************/
+int Hand::findEight()
+{
+	int position = 0;
+	Node<Card>* searchPtr = headNodePtr;
+	if (headNodePtr == NULL)
+	{
+		cout << "The list is empty!" << endl;
+	}
+	else
+	{
+		position = 1;	
+		temp = searchPtr -> getItem();
+		if(temp.getRank() == 8)
+		{
+			return position;
+		}
+		else
+		{
+			while (searchPtr -> getNext() != NULL)
+			{
+				position++;
+				searchPtr = searchPtr -> getNext();
+				temp = searchPtr -> getItem();
+				if(temp.getRank() == 8)
+				{
+					return position;
+				}
+			}
+		}
+	}
+}
+
+/**************************************************
+//highestSuitCount
+//For use by the computer player in crazy eights
+//determines which suit would be best to switch to
+//returns integer representing the chosen suit
+***************************************************/
+int Hand::highestSuitCount()
+{
+	if(clubsCount >= diamondsCount && clubsCount >= heartsCount && clubsCount >= spadesCount)
+		return 1;
+	else if(diamondsCount >= clubsCount && diamondsCount >= heartsCount && diamondsCount >= spadesCount)
+		return 2;
+	else if(heartsCount >= clubsCount && heartsCount >= diamondsCount && heartsCount >= spadesCount)
+		return 3;
+	else if(spadesCount >= clubsCount && spadesCount >= diamondsCount && spadesCount >= heartsCount)
+		return 4;
+}

@@ -1,0 +1,646 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <cstdlib>
+#include <time.h>
+
+#include "Card.h"
+#include "Card.cpp"
+#include "Deck.h"
+#include "Deck.cpp"
+#include "RPSTools.cpp"
+#include "Hand.h"
+#include "Hand.cpp"
+
+using namespace std;
+
+void draw();
+void gameOfWar();
+void blackjack(Hand, Hand);
+void magicTrick();
+void crazyEights(Hand, Hand);
+void checkHand(Card, Hand, Deck, Deck);
+bool checkForMatch(Card, Card);
+Card pickHandCard(Card, Hand, Deck, Deck);
+void addCardCheck(Deck, Deck);
+Card setMatchCard(int, int);
+
+int main()
+{
+	int pick = 0;
+	Hand player;
+	Hand house;
+
+	system("clear");
+	srand(time(NULL));
+
+	cout << "\nIf the program ever pauses, press Enter to continue";
+	cin.ignore();
+
+	do
+	{
+		cout << endl;
+		cout << "***************************************************" << endl;
+		cout << "1) Draw cards" << endl;
+		cout <<	"2) Play a game of War" << endl;
+		cout << "3) Play a game of Blackjack against the House" << endl;
+		cout << "4) Magic Trick" << endl;
+		cout << "5) Play Rock, Paper, Scissors" << endl;
+		cout << "6) Play Crazy Eights" << endl;
+		cout << "7) End program" << endl;
+		cout << "***************************************************" << endl;
+
+		cout << "Select an action by entering the appropriate number: ";
+		cin >> pick;
+
+		system("clear");
+
+		switch(pick)
+		{
+		case 1:
+			draw();
+			break;
+		case 2:
+			gameOfWar();
+			break;
+		case 3:
+			blackjack(player, house);
+			break;
+		case 4:
+			magicTrick();
+			break;
+		case 5:
+			cin.ignore();
+			RPS();
+			system("clear");
+			break;
+		case 6:
+			crazyEights(player, house);
+			break;
+		case 7:
+			system("clear");
+			cout << "\nGoodbye!" << endl;
+			cout << "********" << endl;
+			break;
+		default:
+			cout << "You did not enter 1-6: Try again" << endl;
+		}
+	}while(pick != 7);
+
+	return 0;
+}
+
+void draw()
+{
+	int repeat = 2;
+	Deck myDeck;
+	myDeck.fillDeck();
+	Card temp;
+
+	do
+	{
+		temp = myDeck.pop();
+		cout << "\n" << temp << endl;
+
+		cout << "\nTo draw another card, press any number above 0" << endl;
+		cout << "To return to menu, press 0: ";
+		cin >> repeat;
+		cout << endl;
+	}while(repeat != 0);
+	myDeck.~Deck();
+	system("clear");
+}
+
+/***********************************************************************
+//War function
+//This plays 10 rounds of War
+//Each round draws one card per player and compares them
+//Player with the higher card wins the round
+//Impossible for a draw in a round
+//Player who wins the most rounds wins the game
+//if both players win an equal number of rounds, the game ends in a draw
+//fully automated process
+************************************************************************/
+void gameOfWar()
+{
+	Deck myDeck;
+	myDeck.fillDeck();
+	int score = 0;
+	Card player1;
+	Card player2;
+
+	cout << "\nTwo players will now play a game of War" << endl;
+	cout << "The game will last for 10 rounds" << endl;
+	cin.ignore();
+
+	for(int i = 0; i < 10; i++)
+	{
+		player1 = myDeck.pop();
+		player2 = myDeck.pop();
+
+		cout << "\nPlayer 1 drew a card: " << player1 << endl;
+		cout << "\nPlayer 2 drew a card: " << player2 << endl;
+
+		if(player1 > player2)
+		{
+			score++;
+			cout << "\nPlayer 1 wins this round!" << endl;
+		}
+		else
+			cout << "\nPlayer 2 wins this round!" << endl;
+		cout << "---------------------------------------" << endl;
+		cin.ignore();
+	}
+
+	cout << "Player 1 score: " << score << endl;
+	cout << "Player 2 score: " << 10 - score << endl;
+
+	if(score > 5)
+		cout << "\nPlayer 1 is the winner!" << endl;
+	else if(score < 5)
+		cout << "\nPlayer 2 is the winner!" << endl;
+	else// if(score == 5)
+		cout << "\nThis game is a draw." << endl;
+
+	myDeck.~Deck();
+	cout << "\nPress Enter to return to the main menu" << endl;
+	cin.ignore();
+	system("clear");
+}
+
+/*****************************************
+//Blackjack function
+//Plays a game of blackjack
+//Now incorporates linked lists for hands
+*****************************************/
+void blackjack(Hand player, Hand house)
+{
+	Deck myDeck;
+	myDeck.fillDeck();
+	myDeck.shuffle();
+
+	char hitStay = ' ';
+
+	Card playerCard;
+	Card houseCard;
+
+	//Basic Rules
+	cout << "\nJack, Queen, and King cards all have a value of 10" << endl;
+	cout << "Ace has a value of 1" << endl;
+	cout << "Get as close to 21 without exceeding it as you can" << endl;
+	cout << "Hit to draw another card" << endl;
+	cout << "Stay to stop drawing cards" << endl;
+	cout << "This game will be played against the dealer" << endl;
+	cin.ignore();
+	cout << "\nEach player will now be dealt 2 cards" << endl;
+	cin.ignore();
+	for(int d = 0; d < 2; d++)	//Initial two card deal
+	{
+		playerCard = myDeck.pop();
+		player.addCard(playerCard);
+
+		houseCard = myDeck.pop();
+		house.addCard(houseCard);
+	}
+
+	cout << "\n*Your hand*" << endl;
+	player.printList();
+	cout << "\n*Dealer's hand*" << endl;
+	house.printList();
+	cin.ignore();
+
+	do
+	{
+		//Player's turn
+		cout << "\nYou may hit or stay (h for hit/s for stay): ";
+		cin >> hitStay;
+		cin.ignore();
+		while(hitStay != 'h' && hitStay != 's')
+		{
+			cout << "\nYou must enter either h or s: ";
+			cin >> hitStay;
+			cin.ignore();
+		}
+
+		switch(hitStay)
+		{
+		case 'h':
+			playerCard = myDeck.pop();
+			player.addCard(playerCard);;
+			cout << "\nYou drew: " << playerCard << endl;
+			cout << "\n*Your hand*" << endl;
+			player.printList();
+			cin.ignore();
+			break;
+		case 's':
+			//do nothing
+			break;
+		default:
+			cout << "error" << endl;
+		}
+
+		//House's turn
+		if(hitStay == 'h' && player.getRankSum() <= 21 && 
+		player.getRankSum() > house.getRankSum())
+		{
+			houseCard = myDeck.pop();
+			cout << "\nDealer drew: " << houseCard << endl;
+			house.addCard(houseCard);
+			cout << "\n*Dealer's hand*" << endl;
+			house.printList();
+			cin.ignore();
+		}
+	}while(hitStay == 'h' && player.getRankSum() < 21 && house.getRankSum() < 21);
+
+	//House's turn if player stays
+	while(house.getRankSum() < 21 && player.getRankSum() <= 21 && 
+	player.getRankSum() > house.getRankSum())
+	{
+		if(player.getRankSum() > house.getRankSum())
+		{
+			houseCard = myDeck.pop();
+			cout << "\nDealer drew: " << houseCard << endl;
+			house.addCard(houseCard);
+			cout << "\n*Dealer's hand*" << endl;
+			house.printList();
+			cin.ignore();
+		}
+	}
+
+	//win/lose conditions	(multiple if/else statements for code readability) 
+	if(player.getRankSum() == 21)
+	{
+		cout << "\nYou won!" << endl;
+		cout << "********" << endl;
+	}
+	else if(player.getRankSum() < 21 && house.getRankSum() > 21)
+	{
+		cout << "\nYou won!" << endl;
+		cout << "********" << endl;
+	}
+	else if(player.getRankSum() < 21 && player.getRankSum() > house.getRankSum())
+	{
+		cout << "\nYou won!" << endl;
+		cout << "********" << endl;
+	}
+	else
+	{
+		cout << "\nThe House wins" << endl;
+		cout << "--------------" << endl;
+	}
+
+	player.clear();
+	house.clear();
+	myDeck.~Deck();
+	cout << "\nPress Enter to return to the main menu" << endl;
+	cin.ignore();
+	system("clear");
+}
+
+/*******************************************************************
+//Magic Trick function
+//Draws a card from the deck and changes it into the Queen of Hearts
+********************************************************************/
+void magicTrick()
+{
+	cin.ignore();
+	Deck myDeck;
+	myDeck.fillDeck();
+	Card magic = myDeck.pop();
+	cout << "\nThis function will transform any drawn card into the Queen of Hearts" << endl;
+	cin.ignore();
+	cout << "\nYou drew the " << magic << endl;
+	cout << "\n**ALAKAZAM**" << endl;
+	magic.setRank(12);
+	magic.setSuit(3);
+	cout << "\nBehold! The card is now the " << magic << endl;
+	cout << "-------------------------------------------" << endl;
+	myDeck.~Deck();
+	cout << "\nPress Enter to return to the main menu" << endl;
+	cin.ignore();
+	system("clear");
+}
+
+/*****************************************************************
+//Crazy Eights Function
+//plays a game of Crazy Eights
+******************************************************************/
+void crazyEights(Hand player, Hand house)
+{
+	Card joker;
+	cin.ignore();
+	Deck myDeck;
+	myDeck.fillDeck();
+	myDeck.shuffle();
+	Deck discard;	//discard is also a deck for ease of incorporation
+	Card playerTemp;
+	Card toMatch;	//toMatch is what the players base their card choices on
+			//separated for easier implementation of carzy eight plays
+
+	int selectCard = 0;		//selectCard will determine position in hand
+	int turnIndicator = 0;
+	int suitChoice, rankChoice;
+
+	cout << "Drawing 7 cards to player and computer hands" << endl;
+	for(int i = 0; i < 7; i++)
+	{
+		player.addCard(myDeck.pop());
+		house.addCard(myDeck.pop());
+	}
+
+	cin.ignore();
+
+	system("clear");
+
+	toMatch = myDeck.pop();
+	discard.push(toMatch);
+
+	while(player.isEmpty() == false || house.isEmpty() == false)
+	{
+		if(turnIndicator == 0)
+		{
+			//Player's turn
+			cout << "\n*Your hand*" << endl;
+			player.printList();
+			cout << "\nThe House hand has " << house.count() << " cards" << endl;
+			cout << "\nCard to match is: " << toMatch << endl;
+			checkHand(toMatch, player, myDeck, discard);
+
+			do
+			{
+
+
+				cout << "\nEnter the position of the card you would like to play: ";
+				cin >> selectCard;
+
+				playerTemp = player.readAtPos(selectCard);
+				while(playerTemp.getSuit() == 0) //Catches input that is too high
+				{
+					cout << "Re-enter your choice: ";
+					cin >> selectCard;
+					playerTemp = player.readAtPos(selectCard);
+				}
+
+				cout << "\nYou chose the " << playerTemp << endl;
+
+				if(playerTemp.getRank() == 8)
+				{
+					discard.push(playerTemp);
+
+					cout << "Set the rank you wish to play" << endl;
+					cout << "You may not set the rank to 8" << endl;
+					cout << "Start at Ace = 1, and move up" << endl;
+					cin >> rankChoice;
+
+					while(rankChoice > 13 || rankChoice < 1 || rankChoice == 8)
+					{
+						cout << "The rank must be 1-13, excluding 8" << endl;
+						cin >> rankChoice;
+					}
+
+					cout << "\nSet the suit you wish to put in play" << endl;
+					cout << "1) Clubs" << endl;
+					cout << "2) Diamonds" << endl;
+					cout << "3) Hearts" << endl;
+					cout << "4) Spades" << endl;
+					cin >> suitChoice;
+
+					while(suitChoice > 4 || suitChoice < 1)
+					{
+						cout << "The suit must be 1-4" << endl;
+						cin >> suitChoice;
+					}
+
+					toMatch = setMatchCard(rankChoice, suitChoice);
+				}
+				else if(checkForMatch(toMatch, playerTemp) == true)
+				{
+					toMatch = player.retrieveAtPos(selectCard);
+					discard.push(toMatch);
+				}
+				else	//checkForMatch(toMatch, playerTemp)
+				{
+					cout << "\nThat card can not be played. Try again." << endl;
+				}
+			}while(checkForMatch(toMatch, playerTemp) == false && playerTemp.getRank() !=8);
+
+			turnIndicator = 1;
+		}
+		else
+		{
+			//Computer's turn
+			cout << "\n*House Hand*" << endl;
+			house.printList();
+
+			cout << "\n*House Hand*" << endl;
+			house.printList();
+
+			cout << "\nTest pause for infinite loop" << endl;
+			cin.ignore();
+			cin.ignore();
+
+			toMatch = (pickHandCard(toMatch, house, myDeck, discard));
+			//cout << "\nTest" << endl;
+			house.removeCardSuit(toMatch);	//Removes suit from hand's suit count
+			discard.push(toMatch);
+
+			if(toMatch.getRank() == 8)
+			{
+				//Computer chooses card to play over an eight
+				suitChoice = house.highestSuitCount();
+				rankChoice = rand() % 13 + 1;
+				if(rankChoice == 8)
+					rankChoice++;
+				toMatch = setMatchCard(rankChoice, suitChoice);
+			}
+
+			turnIndicator = 0;
+		}
+	}
+
+	if(player.isEmpty() == true)
+		cout << "\n***Congratulations! You Won!***" << endl;
+	else if(house.isEmpty() == true)
+		cout << "\n***The House Wins.***" << endl;
+
+	myDeck.~Deck();
+	discard.~Deck();
+	player.clear();
+	house.clear();
+
+	cout << "\nPress Enter to return to the main menu" << endl;
+	cin.ignore();
+	system("clear");
+}
+
+/***************************************************
+//checkHand
+//Checks to see if the player has any playable cards
+//Draws card if there is nothing that can be played
+****************************************************/
+void checkHand(Card toMatch, Hand player, Deck myDeck, Deck discard)
+{
+	Card temp;
+	while(player.suitsMatch(toMatch) == false && player.ranksMatch(toMatch) == false && player.hasEights() == false)
+	{
+		cout << "\nYou do not have any playable cards." << endl;
+		cout << "A card will be drawn to your hand." << endl;
+		addCardCheck(myDeck, discard);
+		temp = myDeck.pop();
+		cout << "\nThe " << temp << " was added to your hand." << endl;
+		player.addCard(temp);
+
+		cout << "\n*Your hand*" << endl;
+		player.printList();
+		cout << "\nCard to match is: " << toMatch << endl;
+	}
+}
+
+/***********************************************************
+//checkForMatch
+//checks player's card to see if it is allowed to be played
+************************************************************/
+bool checkForMatch(Card toMatch, Card handCard)
+{
+	if(toMatch.getSuit() == handCard.getSuit())
+		return true;
+	else if(toMatch.getRank() == handCard.getRank())
+		return true;
+	else if(toMatch.getRank() == 8)
+		return true;
+	else
+		return false;
+}
+
+/***********************************************************************************************
+//pickHandCard
+//For use by the computer player in crazy eights
+//This is the AI that determines what the computer will do
+//It is important that the suits are processed first
+	//This makes the computer more apt to choose matching suit cards
+//if no cards in the hand match the suit of the toMatch card, the computer looks for ranks
+	//excludes eights
+//if there are no matches at all, the computer looks for eights
+//if none of the above are true, the computer will draw cards until it can make a play
+
+this function calls the search functions from hand that return the position of the matching card
+************************************************************************************************/
+Card pickHandCard(Card toMatch, Hand house, Deck myDeck, Deck discard)
+{
+	int position = 0;
+	while(position == 0)
+	{
+		if(house.suitsMatch(toMatch) == true)
+		{
+			position = house.searchSuits(toMatch);
+			cout << "\nTest for infinite loop" << endl;
+			cin.ignore();
+			cin.ignore();
+		}
+		else if(house.ranksMatch(toMatch) == true)
+		{
+			position = house.searchRanks(toMatch);
+		}
+		else if(house.hasEights() == true)
+		{
+			position = house.findEight();
+		}
+		else
+		{
+			addCardCheck(myDeck, discard);
+			house.addCard(myDeck.pop());
+			cout << "\nThe House drew a card" << endl;
+		}
+	}
+	return house.retrieveAtPos(position);
+}
+
+/**********************************************************************
+//addCardCheck
+//checks that myDeck still has cards to draw
+//if myDeck is empty:
+	//the discard deck is converted to myDeck
+	//myDeck is then shuffled
+//THIS MUST ALWAY BE IMPLEMENTED BEFORE A CARD IS DRAWN IN CRAZY EIGHTS
+***********************************************************************/
+void addCardCheck(Deck myDeck, Deck discard)
+{
+	if(myDeck.isEmpty() == true)
+	{
+		while(discard.isEmpty() == false)	//while discard deck isEmpty()
+		{
+			myDeck.push(discard.pop());
+		}
+		myDeck.shuffle();
+	}
+}
+
+/************************************************************
+//setMatchCard
+//For use when someone plays an 8
+//Returns a card that is set by a player's input
+	//For use by player and computer
+//The returned card becomes the new value of the toMatch card
+	//The returned card is NOT added to the discard deck
+*************************************************************/
+Card setMatchCard(int rankChoice, int suitChoice)
+{
+	Card temp;
+	switch(rankChoice)
+	{
+	case 1:
+		temp.setRank(1);
+		break;
+	case 2:
+		temp.setRank(2);
+		break;
+	case 3:
+		temp.setRank(3);
+		break;
+	case 4:
+		temp.setRank(4);
+		break;
+	case 5:
+		temp.setRank(5);
+		break;
+	case 6:
+		temp.setRank(6);
+		break;
+	case 7:
+		temp.setRank(7);
+		break;
+	case 9:
+		temp.setRank(9);
+		break;
+	case 10:
+		temp.setRank(10);
+		break;
+	case 11:
+		temp.setRank(11);
+		break;
+	case 12:
+		temp.setRank(12);
+		break;
+	case 13:
+		temp.setRank(13);
+		break;
+	}
+
+	switch(suitChoice)
+	{
+	case 1:
+		temp.setSuit(1);
+		break;
+	case 2:
+		temp.setSuit(2);
+		break;
+	case 3:
+		temp.setSuit(3);
+		break;
+	case 4:
+		temp.setSuit(4);
+		break;
+	}
+
+	return temp;
+}
