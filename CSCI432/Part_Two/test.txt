@@ -1,0 +1,23 @@
+while a < 5 do
+	if foo >= bar then
+		bob = fred + 9 - joe;
+	else
+		bob = 37;
+	endif;
+endwhile;
+
+a = b;
+if a < b then
+	a = a + 1;
+else
+endif;
+
+while bob > uncle do
+	while bob != sam do
+		if a == b then
+			a = bob + 1;
+		endif;
+	endwhile;
+endwhile;
+
+error check, this is line 23
