@@ -1,0 +1,158 @@
+#ifndef _HAND
+#define _HAND
+
+#include <stddef.h>
+#include <cstddef>
+
+using namespace std;
+/******************************************************************
+ Class Hand
+ Function: This object defines a Hand in a linked list or stack
+     data structure
+*******************************************************************/
+template <class itemType>
+class Hand 
+{
+	private:
+		itemType item;
+        Hand *next;
+		bool isEmpty;
+    public:
+		// Constructors
+		Hand();
+		Hand(itemType V);
+		Hand(itemType V, Hand *n );
+		
+		// Set methods
+		void setItem( itemType v);
+		void setNext (Hand <itemType>*n);
+		
+		// Get Methods
+		Hand * getNext();
+		itemType  getItem();
+	
+	//EXCEPTIONS THROWN
+	static const int HandNotSet = 9000;
+			
+};
+
+
+/******************************************************************
+ Class Hand
+ Function: Default Constructor
+     Create an empty Hand object. 
+           Since this is a templated class, we cannot know what
+		   a null item will look like.  
+   Result: The next pointer is set to null.
+           The flag: isEmpty is set to indicate that no item has been set.
+   Return: a pointer to the constructed Hand object.
+*******************************************************************/
+template <class itemType>
+Hand<itemType>::Hand()
+{
+	next=NULL;
+	isEmpty=true;
+}
+
+/******************************************************************
+ Class Hand
+ Function:  Constructor
+     Create Hand object that has the data passed and is not linked
+ Parameters: anItem is the data to add to the Hand object
+ Result: The next pointer is set to null. 
+         The flag: isEmpty is set to indicate this Hand has data.
+ Return: a pointer to the constructed Hand object.
+*******************************************************************/   
+template <class itemType>
+Hand<itemType>::Hand( itemType anItem)
+{
+	item = anItem;
+	next = NULL;
+	isEmpty=false;
+}
+
+/******************************************************************
+ Class Hand
+ Function:  Constructor
+     Create Hand object with the data passed and link the Hand
+	   to the next Hand with the pointer to a Hand.
+ Parameters: anItem is the data to add to the Hand object
+ Result: The next pointer is set to parameter passed. 
+            The flag: isEmpty is set to indicate this Hand has data.
+ Return: a pointer to the constructed Hand object.
+*******************************************************************/   
+template <class itemType>
+Hand<itemType>::Hand( itemType  anItem, Hand<itemType>* nextHandPTR)
+{
+	item = anItem;
+	next = nextHandPTR;
+	isEmpty=false;
+}
+
+/******************************************************************
+ Class Hand
+ Function:  setItem
+     Set the item variable with input parameter
+ Parameters: anItem to set in the Hand object
+ Result: The next pointer is not changed.
+		 The item value is changed.
+         The flag: isEmpty is set/reset to indicate this Hand has data.
+ Return: void
+*******************************************************************/   
+template <class itemType>
+void Hand <itemType> :: setItem ( itemType  anItem)
+{
+	item= anItem;
+	isEmpty=false;
+}
+
+/******************************************************************
+ Class Hand
+ Function:  setNext
+     Set the pointer to the next Hand 
+ Parameters: pointer to another Hand object
+ Result: The next pointer is set to the pointer in the parameter
+		 The item value is not changed.
+         The flag: isEmpty is not changed.
+ Return: void
+*******************************************************************/   
+template <class itemType>
+void Hand <itemType> :: setNext (Hand<itemType>* nextHandPTR)
+{
+	next = nextHandPTR; 
+}
+
+
+/******************************************************************
+ Class Hand
+ Function:  getItem
+     Return the value in the item variable
+ Parameters: None
+ Result: Nothing is changed, the item is returned 
+ Exception: If the item is not set, throw exception 9000 - Hand not set
+ Return: void
+*******************************************************************/   
+// Get methods
+template <class itemType>
+itemType Hand<itemType>::getItem()
+{
+    if (isEmpty) { throw HandNotSet;}
+	return item;
+}
+
+/******************************************************************
+ Class Hand
+ Function:  getNext
+     Return the pointer stored in this object
+ Parameters: none
+ Result: The next pointer is returned
+ Return: valid Hand object pointer or NULL
+*******************************************************************/   
+template <class itemType>
+Hand<itemType>*  Hand<itemType>::getNext()  
+{
+	return next;
+}
+
+#endif
+ 

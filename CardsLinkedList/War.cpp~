@@ -1,0 +1,25 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <cstdlib>
+#include <time.h>
+
+#include "Card.h"
+#include "Card.cpp"
+#include "Deck.h"
+#include "Deck.cpp"
+using namespace std;
+
+int main()
+{
+	srand(time(NULL));
+
+	Deck myDeck;		//Calls Deck constructor, makes object myDeck
+	Deck playerHand;	//Calls Deck constructor, makes object playerHand
+	Deck houseHand;		//Calls Deck constructor, makes object houseHand
+	myDeck.buildDynamic();
+
+	menu(myDeck);
+
+	return 0;
+}
